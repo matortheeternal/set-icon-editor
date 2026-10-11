@@ -1,0 +1,121 @@
+html:has(sei-app),
+body:has(sei-app) {
+    width: 100%;
+    min-width: 320px;
+    height: 100%;
+    margin: 0;
+}
+
+body:has(sei-app) {
+    overflow: hidden;
+    background: var(--sl-color-neutral-100);
+}
+
+sei-app {
+    --ink: var(--sl-color-neutral-900);
+    --muted: var(--sl-color-neutral-500);
+    --line: var(--sl-color-neutral-200);
+    --panel: var(--sl-color-neutral-50);
+    --workspace: var(--sl-color-neutral-100);
+    --accent: var(--sl-color-primary-600);
+    --accent-soft: var(--sl-color-primary-50);
+    --danger: var(--sl-color-danger-600);
+    --shadow: var(--sl-shadow-large);
+    /* Shared type scale: panel chrome uses these tokens so headings,
+       labels, buttons and layer names stay consistent. Menu dropdowns
+       and dialogs are Shoelace components and keep their own sizing. */
+    --font-size-panel-heading: 14px;
+    --font-size-field-label: 12px;
+    --font-size-button: 13px;
+    --font-size-layer-label: 14px;
+    --font-weight-heading: 700;
+    --letter-spacing-heading: 0.08em;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+    color: var(--ink);
+    font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+    &:focus-visible {
+        outline: none;
+    }
+
+    &,
+    & *,
+    & *::before,
+    & *::after {
+        box-sizing: border-box;
+    }
+
+    button,
+    input,
+    select {
+        color: inherit;
+        font: inherit;
+    }
+
+    /* Base size for hand-rolled light-DOM buttons (panel chrome).
+       Shoelace internals live in shadow DOM and are unaffected. */
+    button {
+        font-size: var(--font-size-button);
+        font-weight: 700;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    [tabindex]:focus-visible {
+        outline: var(--sl-focus-ring-width) solid var(--sl-color-primary-500);
+        outline-offset: 2px;
+    }
+
+    > main {
+        display: grid;
+        min-height: 0;
+        grid-template-columns: 232px minmax(300px, 1fr) 288px;
+    }
+}
+
+sei-toolbox,
+sei-canvas,
+sei-layers,
+sei-layer-row,
+sei-menu-bar {
+    display: block;
+}
+
+/* Single shared panel-heading treatment: toolbox h2s, layers h2 and
+   settings section h3s render identically. Margins stay per-component. */
+sei-toolbox > h2,
+sei-toolbox > section > h2,
+sei-layers > header h2,
+sei-settings-dialog section h3 {
+    color: var(--ink);
+    font-size: var(--font-size-panel-heading);
+    font-weight: var(--font-weight-heading);
+    letter-spacing: var(--letter-spacing-heading);
+    text-transform: uppercase;
+}
+
+@media (max-width: 940px) {
+    sei-app > main {
+        grid-template-columns: 94px minmax(280px, 1fr) 250px;
+    }
+}
+
+@media (max-width: 700px) {
+    body:has(sei-app) {
+        overflow: auto;
+    }
+
+    sei-app {
+        min-height: 100%;
+        height: auto;
+        grid-template-rows: auto auto;
+
+        > main {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}

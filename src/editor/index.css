@@ -1,0 +1,10 @@
+@import "@shoelace-style/shoelace/dist/themes/light.css";
+@import "@shoelace-style/shoelace/dist/themes/dark.css";
+@import "./Editor.css";
+@import "./menu-bar/MenuBar.css";
+@import "./toolbox/Toolbox.css";
+@import "./canvas/EditorCanvas.css";
+@import "./layers/Layers.css";
+@import "./layer-row/LayerRow.css";
+@import "./preview/PreviewDialog.css";
+@import "./settings/SettingsDialog.css";

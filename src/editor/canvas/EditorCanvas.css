@@ -1,0 +1,89 @@
+sei-canvas {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 32px;
+    background-color: var(--workspace);
+    background-image: radial-gradient(#d5d1db 0.8px, transparent 0.8px);
+    background-size: 18px 18px;
+
+    .stage {
+        position: relative;
+        flex: 0 0 auto;
+    }
+
+    .artboard {
+        position: absolute;
+        inset: 0 auto auto 0;
+        box-sizing: content-box;
+        width: 512px;
+        height: 512px;
+        overflow: visible;
+        border: 1px solid var(--grid-border, #244c35);
+        border-radius: 4px;
+        background-color: var(--grid-shade, #080c0a);
+        /* Grid lines come from a single stretched SVG (see
+           gridBackgroundImage in documentSize.js) so
+           major and minor lines share exact coordinates: minor = sixteenths
+           (32 units on a 512 document), major = quarters (128 units)
+           painted over the coincident minor lines. EditorCanvas applies the
+           image at runtime; the size/repeat below belong to it. */
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        box-shadow: var(--shadow);
+        transform-origin: top left;
+    }
+
+    .artboard::before {
+        position: absolute;
+        z-index: 0;
+        inset: 0;
+        border-radius: inherit;
+        background-color: var(--grid-shade, #080c0a);
+        background-image: inherit;
+        background-size: inherit;
+        background-repeat: inherit;
+        content: '';
+        pointer-events: none;
+    }
+
+    canvas {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        mask-mode: alpha;
+        mask-position: 0 0;
+        mask-repeat: no-repeat;
+        mask-size: 100% 100%;
+        -webkit-mask-position: 0 0;
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-size: 100% 100%;
+        touch-action: none;
+        cursor: grab;
+
+        &.is-dragging {
+            cursor: grabbing;
+        }
+    }
+}
+
+@media (max-width: 940px) {
+    sei-canvas {
+        padding: 22px;
+    }
+}
+
+@media (max-width: 700px) {
+    sei-canvas {
+        min-height: 410px;
+        padding: 18px;
+
+    }
+}

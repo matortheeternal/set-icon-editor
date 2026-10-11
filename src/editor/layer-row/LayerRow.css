@@ -1,0 +1,116 @@
+sei-layer-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 18px 38px minmax(0, 1fr);
+    align-items: center;
+    width: 100%;
+    min-height: 66px;
+    padding: 6px 6px 6px 8px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    cursor: grab;
+    text-align: left;
+    background: transparent;
+    transition: background 140ms ease, border-color 140ms ease;
+
+    &:hover {
+        background: var(--sl-color-neutral-100);
+    }
+
+    &[aria-selected="true"],
+    &.is-selected {
+        border-color: var(--sl-color-primary-200);
+        background: var(--accent-soft);
+    }
+
+    &.is-dragging {
+        opacity: 0.42;
+    }
+
+    &.is-drop-before::before,
+    &.is-drop-after::after {
+        position: absolute;
+        right: 4px;
+        left: 4px;
+        height: 2px;
+        border-radius: 2px;
+        content: "";
+        background: var(--accent);
+    }
+
+    &.is-drop-before::before {
+        top: -5px;
+    }
+
+    &.is-drop-after::after {
+        bottom: -5px;
+    }
+
+    .drag-grip {
+        display: grid;
+        width: 14px;
+        height: 28px;
+        place-content: center;
+        color: var(--sl-color-neutral-400);
+
+        &::before {
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            content: "";
+            background: currentColor;
+            box-shadow: 0 5px currentColor, 0 -5px currentColor, 5px 0 currentColor,
+                5px 5px currentColor, 5px -5px currentColor;
+        }
+    }
+
+    .shape-preview {
+        display: flex;
+        width: 32px;
+        height: 32px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--sl-color-neutral-200);
+        border-radius: 8px;
+        color: var(--sl-color-neutral-1000);
+        background: var(--sl-color-neutral-0);
+
+        svg {
+            width: 21px;
+            height: 21px;
+        }
+    }
+
+    .layer-details {
+        min-width: 0;
+        padding: 0 8px;
+
+        > :first-child {
+            display: block;
+            overflow: hidden;
+            font-size: var(--font-size-layer-label);
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    select {
+        display: block;
+        width: 100%;
+        height: 28px;
+        margin-top: 5px;
+        padding: 0 22px 0 7px;
+        border: 1px solid var(--sl-color-neutral-300);
+        border-radius: 6px;
+        color: var(--sl-color-neutral-600);
+        background: var(--sl-color-neutral-0);
+        cursor: pointer;
+        font-size: var(--font-size-field-label);
+        font-weight: 650;
+
+        &:hover {
+            border-color: var(--sl-color-primary-300);
+        }
+    }
+}

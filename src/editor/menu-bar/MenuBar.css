@@ -1,0 +1,33 @@
+sei-menu-bar {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-bottom: 1px solid var(--sl-color-neutral-200);
+    background: var(--sl-color-neutral-0);
+}
+
+sei-menu-bar sl-dropdown > sl-button::part(base) {
+    min-height: 30px;
+    padding: 0 0.65rem;
+    border: 0;
+    border-radius: 4px;
+    color: var(--ink);
+    background: transparent;
+    font-weight: 500;
+}
+
+sei-menu-bar sl-dropdown > sl-button:hover::part(base) {
+    background: var(--sl-color-neutral-100);
+}
+
+sei-menu-bar sl-dropdown[open] > sl-button::part(base),
+sei-menu-bar sl-dropdown[open] > sl-button:hover::part(base) {
+    color: white;
+    background: var(--sl-color-primary-600);
+}
+
+sei-menu-bar .menu-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+}

@@ -1,0 +1,7 @@
+# NSIS compiler image for building the Windows installer without a
+# system-wide NSIS install. See tasks/makensis-docker.sh.
+FROM debian:stable-slim
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nsis \
+    && rm -rf /var/lib/apt/lists/*
+ENTRYPOINT ["makensis"]

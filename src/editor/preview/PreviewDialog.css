@@ -1,0 +1,42 @@
+sei-preview-dialog .preview-dialog {
+    --width: min(560px, 90vw);
+}
+
+sei-preview-dialog .preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+    margin-top: 12px;
+    padding: 24px;
+    border: 1px solid var(--sl-color-neutral-200);
+    border-radius: 8px;
+    background: var(--sl-color-neutral-100);
+}
+
+sei-preview-dialog .preview svg {
+    width: min(320px, 100%);
+    height: auto;
+}
+
+sei-preview-dialog .preset-colors {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 12px 0;
+}
+
+sei-preview-dialog .preset-colors label {
+    display: grid;
+    gap: 4px;
+    justify-items: center;
+    font-size: var(--font-size-field-label);
+}
+
+sei-preview-dialog .custom-preset {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: var(--font-size-field-label);
+}

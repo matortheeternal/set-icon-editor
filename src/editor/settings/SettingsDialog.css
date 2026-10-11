@@ -1,0 +1,62 @@
+sei-settings-dialog {
+    .settings-dialog {
+        --width: min(560px, calc(100vw - 2rem));
+    }
+
+    .settings-form {
+        display: grid;
+        gap: 22px;
+    }
+
+    section h3 {
+        margin: 0 0 12px;
+    }
+
+    .appearance-settings {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        gap: 16px;
+    }
+
+    .show-grid {
+        padding-bottom: 8px;
+    }
+
+    .color-settings {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 18px;
+    }
+
+    .color-settings label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-width: 0;
+        color: var(--sl-color-neutral-700);
+        font-size: var(--font-size-field-label);
+    }
+
+    sl-color-picker {
+        flex: 0 0 auto;
+    }
+
+    [data-action="resetSettings"] {
+        margin-right: auto;
+    }
+}
+
+@media (max-width: 520px) {
+    sei-settings-dialog {
+        .appearance-settings,
+        .color-settings {
+            grid-template-columns: 1fr;
+        }
+
+        .show-grid {
+            padding-bottom: 0;
+        }
+    }
+}
