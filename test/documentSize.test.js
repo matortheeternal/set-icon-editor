@@ -1,3 +1,4 @@
+import './helpers/domSetup.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
@@ -137,5 +138,5 @@ test('serializeScene normalizes the frame but keeps document coordinates', () =>
     };
     const svg = serializeScene(scene, null);
     assert.match(svg, /width="512" height="512" viewBox="0 0 623 623"/);
-    assert.match(svg, /<rect width="5" height="5"\/>/);
+    assert.match(svg, /<rect width="5" height="5"\s*\/>/);
 });

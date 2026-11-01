@@ -1,10 +1,10 @@
+import './helpers/domSetup.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
     applyRarity,
     previewMarkup,
-    RARITY_GRADIENT_ID,
 } from '../src/editor/preview/rarityPreview.js';
 import {
     BUILT_IN_RARITIES,
@@ -24,7 +24,8 @@ function memoryStorage(seed = {}) {
 
 const SAMPLE = [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">',
+    '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"',
+    'viewBox="0 0 512 512">',
     '<metadata id="layered-project">{"app":"x"}</metadata>',
     '<g><path d="M0 0h10v10H0z" fill="#000000" stroke="#ffffff" stroke-width="8"/>',
     '<circle cx="5" cy="5" r="2" fill="none" stroke="none"/></g>',
@@ -56,19 +57,23 @@ test('built-in rarities match the card-magician M15 values', () => {
 test('applyRarity swaps fills for the gradient and strokes for the outline', () => {
     const rare = findRarity('rare');
     const out = applyRarity(SAMPLE, rare);
-    assert.match(out, new RegExp(`fill="url\\(#${RARITY_GRADIENT_ID}\\)"`));
+    assert.match(out, /fill="url\(#set-rarity-\d+-paint\)"/);
     assert.match(out, /stroke="#000000"/);
     assert.ok(!out.includes('fill="#000000"'));
-    // Holes stay unpainted.
     assert.match(out, /fill="none"/);
     assert.match(out, /stroke="none"/);
-    // Layered project metadata never leaks into the preview.
     assert.ok(!out.includes('<metadata'));
-    // Diagonal card-magician gradient stops.
-    assert.match(out, /<stop offset="0%" stop-color="#876c13"\/>/);
-    assert.match(out, /<stop offset="45%" stop-color="#f6e8a3"\/>/);
-    assert.match(out, /<stop offset="55%" stop-color="#f6e8a3"\/>/);
-    assert.match(out, /<stop offset="100%" stop-color="#d7bf55"\/>/);
+    const svg = new DOMParser().parseFromString(out, 'image/svg+xml');
+    const expectedStops = [
+        ['0%', '#876c13'],
+        ['45%', '#f6e8a3'],
+        ['55%', '#f6e8a3'],
+        ['100%', '#d7bf55'],
+    ];
+    for (const [offset, color] of expectedStops) {
+        const stop = svg.querySelector(`stop[offset="${offset}"]`);
+        assert.equal(stop.getAttribute('stop-color'), color);
+    }
 });
 
 test('applyRarity tolerates empty input and previewMarkup strips the prolog', () => {
