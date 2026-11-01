@@ -81,8 +81,6 @@ export class EditorController {
         this.backend.resize(width, height, scale, this.viewState);
     }
 
-    // Undo/redo rebuild paths, so previously valid point indices may no
-    // longer exist. Clamp them instead of carrying stale indices.
     clampPointSelection() {
         const editingId = this.state.pointEditingId;
         if (editingId == null) {
@@ -240,7 +238,6 @@ export class EditorController {
         const allSmooth = indices.every(
             (index) => found.shape.segments[index]?.isSmooth?.() === true,
         );
-        // Mixed selections round out; uniformly smooth selections sharpen.
         const changed = this.backend.setPointsSmooth(editingId, indices, !allSmooth);
         if (changed) this.refresh();
         return changed;
@@ -302,8 +299,6 @@ export class EditorController {
         if (!ids.length) return 0;
         const reflected = this.backend.reflectLayers(ids, axis);
         if (!reflected) return 0;
-        // Mirroring can reverse winding and segment order, so any active
-        // point selection no longer addresses the same anchors.
         if (this.state.pointEditingId != null) {
             this.state.selectedPointIndices = [];
         }

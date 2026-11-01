@@ -18,7 +18,6 @@ function makeEditor() {
         getState: () => ({}),
         callbacks: {},
     });
-    // PaperEditor creates its own scope internally; use its scope.
     return editor;
 }
 
@@ -64,7 +63,6 @@ test('duplicate inserts a clone without touching the clipboard', () => {
     const clones = editor.duplicateMany([id]);
     assert.equal(clones.length, 1);
     assert.equal(editor.repository.shapeLayers().length, 2);
-    // Duplicating must not populate the clipboard as a side effect.
     assert.equal(editor.clipboard.length, 0);
 
     const names = editor.repository.shapeLayers().map((layer) => layer.name);

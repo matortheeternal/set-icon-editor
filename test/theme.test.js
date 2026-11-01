@@ -61,7 +61,6 @@ test('initializeTheme applies an explicit preference without watching the OS', (
     });
     assert.equal(root.classList.contains('sl-theme-dark'), true);
     assert.deepEqual(seen, ['dark']);
-    // No system watcher was installed, so unsubscribing is a safe no-op.
     unwatch();
 });
 

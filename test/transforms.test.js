@@ -159,21 +159,17 @@ test('holding Ctrl snaps rotation to 15-degree steps', () => {
     const { controller } = makeController();
     const ctrl = { control: true };
     controller.beginRotate([layer], atAngle(0));
-    // 10 degrees of motion snaps forward to a 15-degree step.
     assert.ok(dragTo(controller, atAngle(10).x, atAngle(10).y, ctrl));
     assert.equal(layer.rotates.length, 1);
     assert.equal(layer.rotates[0].delta, 15);
     assert.equal(layer.data.rotation, 15);
-    // 10 more degrees only reach the next step's halfway carry.
     assert.ok(dragTo(controller, atAngle(20).x, atAngle(20).y, ctrl));
     assert.equal(layer.rotates.length, 1);
     assert.equal(layer.data.rotation, 15);
-    // Reaching 25 degrees of motion applies the second step.
     assert.ok(dragTo(controller, atAngle(25).x, atAngle(25).y, ctrl));
     assert.equal(layer.rotates.length, 2);
     assert.equal(layer.rotates[1].delta, 15);
     assert.equal(layer.data.rotation, 30);
-    // Releasing Ctrl mid-drag flushes the remainder and stays continuous.
     assert.ok(dragTo(controller, atAngle(40).x, atAngle(40).y));
     assert.ok(Math.abs(layer.data.rotation - 40) < 1e-9);
 });

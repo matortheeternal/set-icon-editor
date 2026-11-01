@@ -116,8 +116,6 @@ export class EditorCanvas extends EditorElement {
         const width = rect?.width || Number(viewportWidth) || 0;
         const height = rect?.height || Number(viewportHeight) || 0;
         if (!width || !height) return;
-        // Paper owns the backing-store size. Give it the actual CSS viewport
-        // size too, so the browser never has to resample its rendered bitmap.
         this.canvas.style.width = `${width}px`;
         this.canvas.style.height = `${height}px`;
         const mask = canvasOpacityMask(width, height, safeScale);

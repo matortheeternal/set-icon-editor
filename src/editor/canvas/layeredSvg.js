@@ -1,28 +1,6 @@
 import { isLayerMode } from '../layerModes.js';
 import { SHAPE_STYLE, shapeForType } from '../Shape.js';
 
-// Round-trip design note:
-//
-// Options considered for restoring the layered document from an export:
-//   1. XML comments carrying JSON — fragile (stripped by optimizers,
-//      no standard structure, painful to parse).
-//   2. Sidecar / alternative project format (e.g. `.svg.json`, xcf/psd
-//      style) — exact, but two files to keep in sync, easy to lose layers
-//      when only the `.svg` is shared.
-//   3. Native layered SVG output (one `<path>` per layer) — breaks visual
-//      fidelity, because boolean modes (merge/intersection/difference) only
-//      exist as flattened geometry in the compositor.
-//
-// Chosen system: single `.svg` file with BOTH:
-//   - the flattened composite geometry as the visible artwork (what every
-//     external viewer / icon consumer renders — unchanged behavior), and
-//   - a standard `<metadata id="set-icon-editor">` block carrying the
-//     full layer project as JSON (name, shapeType, mode, compound flag,
-//     pathData, in bottom-to-top order).
-//
-// On open, the importer prefers the metadata project when present and
-// valid, and falls back to the legacy flat path import for plain SVGs
-// (including files written before this feature or by other tools).
 
 export const LAYERED_METADATA_ID = 'set-icon-editor';
 export const LAYERED_FORMAT_VERSION = 1;
@@ -68,8 +46,6 @@ export function metadataElement(layers) {
     return `<metadata id="${LAYERED_METADATA_ID}">${escapeMetadataJson(encodeProjectMetadata(layers))}</metadata>`;
 }
 
-// Regex-based on purpose: works in browsers (DOMParser) and in Node tests
-// without a DOM. Matches the first metadata block with our id.
 export function extractProjectJson(svgText) {
     if (typeof svgText !== 'string') return null;
     const pattern = new RegExp(

@@ -1,35 +1,3 @@
-// Release orchestrator for Neutralinojs distribution packages.
-//
-// Pipeline per (target, arch):
-//   1. `npm run build` (esbuild bundle) + `neu build` (all-platform binaries)
-//   2. tasks/sync-builder-config.js (workaround for builder issue #40 -- the
-//      builder reads its *own* neutralino.config.json, not the project's)
-//   3. `neu builder <target> --<arch>` for every target/arch declared in the
-//      project's cli.builder section. Before/after each build, artifacts are
-//      stashed in dist/.release-hold/ because the deb/dmg/nsis package
-//      builders delete every pre-existing *.<ext> file in the output dir at
-//      the start of each build -- without stashing, multi-arch matrices
-//      sharing one output dir (e.g. ./dist/linux) would keep only the last
-//      build's artifact.
-//   4. Rename AppImage outputs from the builder's
-//      `<appid>-<version>-<arch>.AppImage` to the friendly
-//      `SetIconEditor-<version>-<x86_64|aarch64>.AppImage` (+ stable
-//      `SetIconEditor.AppImage` copy of the primary arch for backwards
-//      compatibility with the previously published artifact name)
-//
-// Host limitations (skipped with a warning, never fatal):
-//   - dmg requires macOS (hdiutil).
-//   - appimage for an arch != host arch requires executing that arch's
-//     appimagetool binary, which fails on a foreign host (exit 126).
-//   - nsis requires a `makensis` binary on PATH (Debian/Ubuntu: `apt install
-//     nsis`; macOS: `brew install nsis`; Windows: NSIS installer) or the
-//     docker shim in tasks/makensis-docker.sh.
-//
-// Usage:
-//   npm run release                        # full matrix (neu build + all targets)
-//   npm run release:linux                  # appimage + deb only
-//   node tasks/release.js --skip-build     # reuse existing dist/ binaries
-//   node tasks/release.js --targets=deb,appimage [--skip-sync] [--no-rename]
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -39,15 +7,10 @@ import { syncBuilderConfig } from './sync-builder-config.js';
 const projectRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const projectConfigPath = path.join(projectRoot, 'neutralino.config.json');
 
-// Builder arch -> AppImage filename arch (AppImage convention).
 const APPIMAGE_ARCH_ALIASES = { x64: 'x86_64', x86_64: 'x86_64', arm64: 'aarch64', aarch64: 'aarch64', armhf: 'armhf', ia32: 'i686', i686: 'i686' };
 
-// File extension each builder target writes to its output dir. Needed for
-// the stash/restore dance below (see holdArtifacts/restoreArtifacts).
 const TARGET_EXTENSIONS = { deb: '.deb', appimage: '.AppImage', nsis: '.exe', dmg: '.dmg' };
 
-// Node's process.arch uses the same names as the builder's arch flags for
-// the arches we ship (x64, arm64), so a direct comparison works.
 const HOST_ARCH = process.arch;
 
 function friendlyName(applicationName) {
@@ -84,7 +47,6 @@ function loadMatrix() {
 }
 
 function renameAppImages({ config, built }) {
-    // built: [{ arch, outputDir }] for successful appimage builds.
     const appId = sanitizeAppId(config.applicationId);
     const version = config.version || '1.0.0';
     const name = friendlyName(config.applicationName);
@@ -104,7 +66,6 @@ function renameAppImages({ config, built }) {
         renamed.push(to);
         if (!primary) primary = to;
     }
-    // Stable backwards-compatible name pointing at the primary arch build.
     if (primary) {
         const stable = path.join(path.dirname(primary), `${name}.AppImage`);
         fs.copyFileSync(primary, stable);
@@ -127,7 +88,7 @@ function summarizeOutputs() {    console.log('\n[release] dist/ outputs:');
             console.log(`  dist/${entry.name}/`);
             for (const f of files) {
                 let size = '';
-                try { size = ` (${(fs.statSync(path.join(full, f)).size / 1048576).toFixed(1)} MB)`; } catch { /* ignore */ }
+                try { size = ` (${(fs.statSync(path.join(full, f)).size / 1048576).toFixed(1)} MB)`; } catch {   }
                 console.log(`    - ${f}${size}`);
             }
         } else {
@@ -136,11 +97,6 @@ function summarizeOutputs() {    console.log('\n[release] dist/ outputs:');
     }
 }
 
-// The deb/dmg/nsis package builders delete every pre-existing file with
-// their extension in the output directory at the start of each build. When
-// several arch builds share one output dir, that would leave only the last
-// artifact standing -- so completed artifacts are parked in a holding dir
-// between builds and moved back at the end (always, even on failure).
 function holdArtifacts(holdDir, held, outputDir, ext) {
     fs.mkdirSync(holdDir, { recursive: true });
     if (!fs.existsSync(outputDir)) return;
@@ -166,7 +122,7 @@ function restoreArtifacts(holdDir, held) {
         if (fs.existsSync(holdDir) && fs.readdirSync(holdDir).length === 0) {
             fs.rmdirSync(holdDir);
         }
-    } catch { /* best effort */ }
+    } catch {   }
 }
 
 function parseArgs(argv) {
@@ -197,9 +153,6 @@ async function main() {
         }
     }
 
-    // dmg (hdiutil/appdmg) only builds on macOS, and AppImage packaging
-    // executes the target arch's appimagetool binary -- both are skipped
-    // on incapable hosts with a warning instead of failing the matrix.
     const isMac = process.platform === 'darwin';
     const plan = [];
     for (const item of wanted) {
@@ -238,8 +191,6 @@ async function main() {
         for (const { target, arch, output } of plan) {
             const outputDir = path.resolve(projectRoot, output);
             const ext = TARGET_EXTENSIONS[target];
-            // Park artifacts from earlier builds: the next `neu builder`
-            // invocation wipes *.<ext> already sitting in the output dir.
             if (ext) holdArtifacts(holdDir, held, outputDir, ext);
             const args = ['builder', target];
             if (arch) args.push(`--${arch}`);
@@ -248,7 +199,6 @@ async function main() {
                 failures.push(`${target}/${arch}`);
                 continue;
             }
-            // Park the fresh artifact right away for the same reason.
             if (ext) holdArtifacts(holdDir, held, outputDir, ext);
             if (target === 'appimage') {
                 builtAppImages.push({ arch, outputDir });

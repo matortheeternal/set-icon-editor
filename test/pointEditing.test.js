@@ -86,8 +86,6 @@ test('insert checkpoints so undo restores the segment count', () => {
     const { scope } = controller.backend.scene;
     controller.insertPointAt(new scope.Point(20, 10));
     assert.equal(pointCount(controller, id), 5);
-    // Undo rebuilds layers with fresh ids; follow the selection to the
-    // restored layer. The point-editing session follows it too.
     controller.command({ command: 'undo' });
     const undoneId = controller.selection.primaryId;
     assert.equal(pointCount(controller, undoneId), 4);
@@ -103,7 +101,6 @@ test('delete removes points but guards the closed-path minimum of 3', () => {
     const id = addRectangle(controller, [10, 10], [30, 20]);
     editShape(controller, id);
 
-    // Deleting 2 of 4 would leave 2 < 3, so the backend refuses.
     assert.equal(controller.backend.deletePointIndices(id, [0, 1]), 0);
     assert.equal(pointCount(controller, id), 4);
 
@@ -136,7 +133,6 @@ test('delete-selected removes points, never the layer, while editing', () => {
     assert.equal(pointCount(controller, id), 3);
     assert.notEqual(controller.backend.repository.getById(id), null);
 
-    // Without a point selection Delete is a no-op (the layer survives).
     controller.command({ command: 'delete-selected' });
     assert.notEqual(controller.backend.repository.getById(id), null);
     assert.equal(pointCount(controller, id), 3);
@@ -217,7 +213,6 @@ test('smooth converts sharp points to round and back', () => {
     assert.deepEqual(smoothStatesFor(shape, [0, 1]), [false, false]);
     assert.equal(controller.backend.setPointsSmooth(id, [0], true), 1);
     assert.deepEqual(smoothStatesFor(shape, [0, 1]), [true, false]);
-    // Smoothing an already-smooth point is a no-op without a checkpoint.
     const history = controller.backend.history;
     const depth = history.past.length;
     assert.equal(controller.backend.setPointsSmooth(id, [0], true), 0);

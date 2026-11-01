@@ -92,9 +92,7 @@ test('gridBackgroundImage draws one exact major-over-minor grid', () => {
     assert.match(svg, /viewBox="0 0 16 16"/);
     assert.match(svg, /crispEdges/);
     assert.match(svg, /non-scaling-stroke/);
-    // Minor layer first, major painted over the coincident lines.
     assert.ok(svg.indexOf('stroke-opacity="0.08"') < svg.indexOf('stroke-opacity="0.18"'));
-    // Quarter lines exist exactly once: no doubled major+minor lines.
     assert.equal((svg.match(/M4 0V16/g) ?? []).length, 1);
     assert.equal((svg.match(/M0 4H16/g) ?? []).length, 1);
     assert.match(svg, /M16 0V16/);

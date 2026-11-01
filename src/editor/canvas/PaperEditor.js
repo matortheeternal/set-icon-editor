@@ -155,13 +155,10 @@ export class PaperEditor {
         return this.editingShape(id)?.shape.segments.length ?? 0;
     }
 
-    // Splits the nearest curve within tolerance, preserving path shape.
-    // Returns the new segment index, or null when nothing was inserted.
     insertPointAt(id, globalPoint) {
         const found = this.editingShape(id);
         if (!found) return null;
         const { layer, shape } = found;
-        // Probe before checkpointing so misses leave history untouched.
         const location = probeInsertLocation(shape, globalPoint);
         if (!location) return null;
         this.checkpoint();
@@ -175,8 +172,6 @@ export class PaperEditor {
         return inserted.index;
     }
 
-    // Deletes the given point indices, guarding the minimum segment count
-    // (3 for closed paths, 2 for open paths). Returns the deleted count.
     deletePointIndices(id, indices) {
         const found = this.editingShape(id);
         if (!found) return 0;
@@ -190,8 +185,6 @@ export class PaperEditor {
         return deleted;
     }
 
-    // Converts points between sharp (collapsed handles) and round
-    // (smoothed). Returns the number of changed points.
     setPointsSmooth(id, indices, smooth) {
         const found = this.editingShape(id);
         if (!found) return 0;
@@ -217,7 +210,6 @@ export class PaperEditor {
         return changed;
     }
 
-    // Returns a survivor id so selection has somewhere to go.
     deleteMany(ids) {
         this.checkpoint();
         const normalized = ids.map(Number).filter(Number.isFinite);
@@ -230,7 +222,6 @@ export class PaperEditor {
         const normalized = [ids].flat().map(Number).filter(Number.isFinite);
         const described = this.repository.describeMany(normalized);
         if (!described.length) return 0;
-        // Deep-clone so later edits to live layers cannot mutate the buffer.
         this.clipboard = described.map((entry) => ({
             ...entry,
             data: { ...entry.data },
@@ -281,7 +272,6 @@ export class PaperEditor {
         return this.repository.sendToBottom(id);
     }
 
-    // Moves every given layer by the same delta.
     nudgeMany(ids, x, y) {
         this.checkpoint();
         const layers = this.repository.getMany(ids);
@@ -289,9 +279,6 @@ export class PaperEditor {
             layer.position = layer.position.add([x, y]);
     }
 
-    // Mirrors layers about the central axis of their union bounds:
-    // 'horizontal' flips left-right, 'vertical' flips top-bottom.
-    // Returns the reflected count, or 0 when there is nothing to do.
     reflectLayers(ids, axis) {
         const sx = axis === 'horizontal' ? -1 : 1;
         const sy = axis === 'vertical' ? -1 : 1;
@@ -308,9 +295,6 @@ export class PaperEditor {
         for (const layer of layers) {
             const rotation = layer.data.rotation || 0;
             layer.scale(sx, sy, center);
-            // A reflection reverses the frame's handedness. Signed height
-            // preserves which side each control belongs to instead of
-            // replacing the frame with a fresh axis-aligned bounding box.
             layer.data.rotation = axis === 'horizontal'
                 ? (180 - rotation + 360) % 360
                 : (-rotation + 360) % 360;
@@ -330,10 +314,10 @@ export class PaperEditor {
         if (!layers.length) return null;
         this.compositor.rebuild();
         const svg = serializeScene(this.scene, this.repository);
-        const { outputPath } = getBootOptions();
+        const { filename: savePath } = getBootOptions();
         try {
             return await saveTextFile({
-                path: outputPath,
+                path: savePath,
                 filename,
                 contents: svg,
                 mimeType: 'image/svg+xml',

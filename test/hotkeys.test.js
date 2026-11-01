@@ -189,8 +189,6 @@ test('tool, delete, and nudge shortcuts route', () => {
     host.fire(keyEvent('ArrowLeft'));
     host.fire(keyEvent('ArrowRight', { shiftKey: true }));
     assert.deepEqual(editor.tools, ['rectangle']);
-    // Delete routes through the delete-selected command so point editing
-    // can delete points instead of the whole layer.
     assert.deepEqual(editor.commands, [{ command: 'delete-selected' }]);
     assert.deepEqual(editor.nudged, [[-2, 0], [10, 0]]);
     keyboard.destroy();

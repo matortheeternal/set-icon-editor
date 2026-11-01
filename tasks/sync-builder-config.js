@@ -1,32 +1,3 @@
-// Syncs this project's builder configuration into the installed
-// @neutralinojs-contrib/builder package's own neutralino.config.json.
-//
-// Workaround for https://github.com/neutralinojs-community/neutralinojs-builder/issues/40
-// ("It uses its own neutralino.config.json instead of the working directory
-// neutralino.config.json"): lib/configresolver.js reads
-// path.join(__dirname, "..", "neutralino.config.json"), i.e. the config file
-// shipped *inside* the builder package, and never looks at the project's
-// neutralino.config.json in the current working directory. Until that issue
-// is fixed upstream, `neu builder <target>` silently uses the builder's
-// example app metadata (com.example.myapp) instead of this project's
-// cli.builder section.
-//
-// This script copies applicationId, applicationName, version and the whole
-// cli.builder block from ./neutralino.config.json into the installed
-// builder's neutralino.config.json (keeping a one-time .orig backup of the
-// shipped file). It also patches the installed builder's lib/configresolver.js
-// (one-time .orig backup, idempotent via marker comment) to forward the dmg
-// layout keys (window, iconSize, appPosition, applicationsSymlinkPosition)
-// from the target entry: the resolver otherwise drops them and
-// targets/dmg/packagebuilder.js crashes dereferencing config.window.width.
-// Run it before every `neu builder` invocation -- tasks/release.js does this
-// automatically. Re-running `npm install -g @neutralinojs/neu` (or updating
-// neu) restores the builder's shipped files, so just re-run this script
-// afterwards.
-//
-// Usage:
-//   node tasks/sync-builder-config.js [--builder-config <path>] [--dry-run]
-//   NEU_BUILDER_CONFIG=/path/to/builder/neutralino.config.json node tasks/sync-builder-config.js
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -40,12 +11,10 @@ function findBuilderConfig(explicit) {
     if (explicit || process.env.NEU_BUILDER_CONFIG) {
         candidates.push(path.resolve(explicit || process.env.NEU_BUILDER_CONFIG));
     }
-    // Global neu install layout: <npm-root-g>/@neutralinojs/neu/node_modules/@neutralinojs-contrib/builder/
     try {
         const npmRoot = execFileSync('npm', ['root', '-g'], { encoding: 'utf-8' }).trim();
         candidates.push(path.join(npmRoot, '@neutralinojs', 'neu', 'node_modules', '@neutralinojs-contrib', 'builder', 'neutralino.config.json'));
     } catch {
-        // npm not available; fall through to which-based lookup
     }
     try {
         const neuBin = execFileSync('which', ['neu'], { encoding: 'utf-8' }).trim().split('\n')[0];
@@ -61,9 +30,7 @@ function findBuilderConfig(explicit) {
             dir = parent;
         }
     } catch {
-        // `which neu` failed; ignore
     }
-    // Local (project-level) install, in case the builder is ever added as a devDependency.
     candidates.push(path.join(projectRoot, 'node_modules', '@neutralinojs-contrib', 'builder', 'neutralino.config.json'));
     candidates.push(path.join(projectRoot, 'node_modules', '@neutralinojs', 'neu', 'node_modules', '@neutralinojs-contrib', 'builder', 'neutralino.config.json'));
 
@@ -114,13 +81,10 @@ export function syncBuilderConfig({ builderConfigPath, dryRun = false } = {}) {
     return { target, config: builder };
 }
 
-// Marker identifying our patch block inside the installed resolver.
 const RESOLVER_PATCH_MARKER = 'set-icon-editor: forward dmg layout keys';
 
 const RESOLVER_PATCH_BLOCK = `
-    // ${RESOLVER_PATCH_MARKER} (see tasks/sync-builder-config.js).
-    // Upstream resolveConfig() drops these target-entry keys, which makes
-    // targets/dmg/packagebuilder.js crash on config.window.width.
+    "${RESOLVER_PATCH_MARKER}";
     finalConfig.iconSize = targetConfig.iconSize || 80;
     finalConfig.window = targetConfig.window || { width: 660, height: 400 };
     finalConfig.appPosition = targetConfig.appPosition || { x: 180, y: 170 };

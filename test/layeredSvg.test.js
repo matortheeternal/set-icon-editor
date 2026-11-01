@@ -86,7 +86,6 @@ test('describe + metadata element round-trips names, types, and modes', () => {
         assert.equal(described[1].mode, 'difference');
         const element = metadataElement(described);
         assert.match(element, /<metadata id="set-icon-editor">/);
-        // Raw JSON must be XML-escaped inside the element.
         assert.ok(!element.includes('Base & <Rect>'));
         assert.ok(element.includes('Base &amp; &lt;Rect&gt;'));
         const parsed = parseProjectMetadata(wrapSvg('<g/>', 512, 512, element));
@@ -122,7 +121,6 @@ test('corrupt or foreign metadata is ignored safely', () => {
         parseProjectMetadata('<svg><metadata id="set-icon-editor">{"app":"set-icon-editor","version":1,"layers":[]}</metadata></svg>'),
         null,
     );
-    // Unknown shape/mode fall back instead of throwing.
     const parsed = parseProjectMetadata(
         '<svg><metadata id="set-icon-editor">{"app":"set-icon-editor","version":1,"layers":[{"name":"x","shapeType":"nope","mode":"nope","compound":false,"pathData":"M0 0h10v10H0Z"}]}</metadata></svg>',
     );

@@ -222,8 +222,6 @@ export class MenuBar extends EditorElement {
 
     async openSaveDialog() {
         const fallback = getBootOptions().outputPath ?? 'untitled-icon.svg';
-        // Under Neutralino this is the OS save dialog; elsewhere the
-        // in-app path dialog below.
         const picked = await requestNativeSavePath(fallback);
         if (picked) {
             setBootOptions({ ...getBootOptions(), outputPath: picked });
@@ -235,7 +233,6 @@ export class MenuBar extends EditorElement {
             this.savePath.value = fallback;
             this.saveDialog.show();
         }
-        // picked === null means the user cancelled: stay put.
     }
 
     confirmSaveDialog() {

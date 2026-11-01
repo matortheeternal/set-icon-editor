@@ -102,7 +102,6 @@ export class KeyboardController {
 
     deleteSelected() {
         if (!this.hasSelection) return false;
-        // Route through the command so point editing deletes points.
         this.controller.command({ command: 'delete-selected' });
     }
 

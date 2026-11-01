@@ -215,7 +215,6 @@ test('pressing near the curve keeps the session for a double-click insert', () =
     const selects = [];
     const checkpoints = [];
     const inserts = [];
-    // contains() misses but the curve is within insert tolerance.
     const layer = { id: 1, shape: makeShape(false, 5) };
     const input = makeInput({
         layers: [layer],
@@ -226,7 +225,6 @@ test('pressing near the curve keeps the session for a double-click insert', () =
     });
     input.onMouseDown(downEvent(false));
     assert.deepEqual(selects, []);
-    // A single tap only arms the double-click; it inserts nothing.
     assert.deepEqual(inserts, []);
 });
 

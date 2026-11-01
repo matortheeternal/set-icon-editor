@@ -26,12 +26,6 @@ sei-canvas {
         border: 1px solid var(--grid-border, #244c35);
         border-radius: 4px;
         background-color: var(--grid-shade, #080c0a);
-        /* Grid lines come from a single stretched SVG (see
-           gridBackgroundImage in documentSize.js) so
-           major and minor lines share exact coordinates: minor = sixteenths
-           (32 units on a 512 document), major = quarters (128 units)
-           painted over the coincident minor lines. EditorCanvas applies the
-           image at runtime; the size/repeat below belong to it. */
         background-size: 100% 100%;
         background-repeat: no-repeat;
         box-shadow: var(--shadow);

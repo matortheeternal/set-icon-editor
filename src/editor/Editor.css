@@ -21,9 +21,6 @@ sei-app {
     --accent-soft: var(--sl-color-primary-50);
     --danger: var(--sl-color-danger-600);
     --shadow: var(--sl-shadow-large);
-    /* Shared type scale: panel chrome uses these tokens so headings,
-       labels, buttons and layer names stay consistent. Menu dropdowns
-       and dialogs are Shoelace components and keep their own sizing. */
     --font-size-panel-heading: 14px;
     --font-size-field-label: 12px;
     --font-size-button: 13px;
@@ -54,8 +51,6 @@ sei-app {
         font: inherit;
     }
 
-    /* Base size for hand-rolled light-DOM buttons (panel chrome).
-       Shoelace internals live in shadow DOM and are unaffected. */
     button {
         font-size: var(--font-size-button);
         font-weight: 700;
@@ -84,8 +79,6 @@ sei-menu-bar {
     display: block;
 }
 
-/* Single shared panel-heading treatment: toolbox h2s, layers h2 and
-   settings section h3s render identically. Margins stay per-component. */
 sei-toolbox > h2,
 sei-toolbox > section > h2,
 sei-layers > header h2,

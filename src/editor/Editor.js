@@ -28,8 +28,6 @@ export class Editor extends EditorElement {
         if (this.editor) return;
         this.render();
         this.resetListeners();
-        // KeyboardController listens for keydown on this host, so claim focus
-        // on pointer interactions that did not target a form control.
         if (!this.hasAttribute('tabindex')) this.tabIndex = -1;
         this.addEventListener('pointerdown', (event) => this.claimKeyboard(event), {
             capture: true, signal: this.signal,
@@ -39,15 +37,12 @@ export class Editor extends EditorElement {
             const { width, height, scale } = event.detail;
             this.editor?.resizeViewport(width, height, scale);
         });
-        // A launch --theme argument overrides the persisted preference for
-        // this session without rewriting the user's saved setting.
         this.settings = {
             ...this.settings,
             theme: getBootOptions().theme,
         };
         this.applySettings(this.settings, { persist: false, refresh: false });
         this.startController();
-        // Autofocus so keyboard shortcuts work without an initial click.
         if (document.activeElement === document.body) this.focus({ preventScroll: true });
     }
 
@@ -88,8 +83,6 @@ export class Editor extends EditorElement {
         return this.querySelector('sei-settings-dialog');
     }
 
-    // Shell-level commands need DOM access the controller must stay free
-    // of, so they are routed here instead of editor.command().
     routeCommand(detail) {
         if (detail?.command === 'open-preview') return this.openPreview();
         if (detail?.command === 'open-settings') {

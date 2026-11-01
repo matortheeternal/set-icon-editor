@@ -93,7 +93,6 @@ export class Toolbox extends EditorElement {
         const nextCount = String(pointCount);
         const countInput = this.pointCountInput;
         if (countInput.value !== nextCount) countInput.value = nextCount;
-        // Point editing is only meaningful with one layer selected.
         const editLabel = isEditingPoints
             ? L`Finish editing points`
             : L`Edit points`;

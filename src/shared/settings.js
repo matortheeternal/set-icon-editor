@@ -1,15 +1,9 @@
-// User-configurable program settings, persisted to localStorage.
-// Storage-light so it can be unit tested in Node: every browser access
-// is injectable or guarded.
 
 import { GRID_LINE } from
     '../editor/canvas/documentSize.js';
 
 export const SETTINGS_KEY = 'set-icon-editor.settings';
 
-// Canonical in-app defaults. Visual targets (SHAPE_STYLE, HANDLE_THEME)
-// are passed into applyVisualSettings so this module stays side-effect
-// free; their built-in values match these defaults.
 export const DEFAULT_SHAPE_FILL = '#000000';
 export const DEFAULT_SHAPE_STROKE = '#ffffff';
 export const DEFAULT_HANDLE_COLOR = '#ffffff';
@@ -83,14 +77,10 @@ export function saveSettings(settings, store = storage()) {
     const normalized = normalizeSettings(settings);
     try {
         store?.setItem(SETTINGS_KEY, JSON.stringify(normalized));
-    } catch {
-        // Private-mode / quota failure: settings still apply in memory.
-    }
+    } catch {}
     return normalized;
 }
 
-// Pushes settings into the live style objects the canvas reads at draw
-// time. Targets are injectable to keep storage and rendering decoupled.
 export function applyVisualSettings(
     settings,
     { shapeStyle = null, handleTheme = null } = {},

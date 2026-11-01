@@ -24,8 +24,6 @@ export class LayerRepository {
         return found ?? null;
     }
 
-    // TODO: Add multi-select.
-    // Batch lookup for operating on several layers at once.
     getMany(ids) {
         const wanted = new Set(ids.map(Number));
         return this.shapeLayers().filter(
@@ -87,7 +85,6 @@ export class LayerRepository {
             .map((layer) => this.describeLayer(layer))
             .filter(Boolean);
         const clones = described.map((entry) => this.instantiate(entry, { offset }));
-        // Keep z-order stable: insert each clone directly above its source.
         sources.forEach((source, index) => {
             clones[index]?.insertAbove(source);
         });
@@ -147,8 +144,6 @@ export class LayerRepository {
         return true;
     }
 
-    // TODO: Add multi-select.
-    // Bulk delete keeps one repository round-trip per command.
     removeMany(ids) {
         return ids.map((id) => this.remove(id));
     }

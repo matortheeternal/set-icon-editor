@@ -62,7 +62,6 @@ function undone(editor, ids) {
 test('reflect horizontal mirrors an asymmetric shape about its center', () => {
     const editor = makeEditor();
     const id = addTriangle(editor, [[0, 0], [40, 0], [0, 20]]);
-    // Center x = 20, so x maps to 40 - x.
     assert.equal(editor.reflectLayers([id], 'horizontal'), 1);
     const shape = editor.repository.pathItem(editor.repository.getById(id));
     assert.deepEqual(sortedPoints(shape), ['0,0', '40,0', '40,20']);
@@ -77,7 +76,6 @@ test('reflect horizontal mirrors an asymmetric shape about its center', () => {
 test('reflect vertical mirrors top to bottom', () => {
     const editor = makeEditor();
     const id = addTriangle(editor, [[0, 0], [40, 0], [0, 20]]);
-    // Center y = 10, so y maps to 20 - y.
     assert.equal(editor.reflectLayers([id], 'vertical'), 1);
     const shape = editor.repository.pathItem(editor.repository.getById(id));
     assert.deepEqual(sortedPoints(shape), ['0,0', '0,20', '40,20']);
@@ -104,11 +102,9 @@ test('reflect mirrors several layers about their union center', () => {
     const editor = makeEditor();
     const left = addRectangle(editor, [10, 10], [30, 20]);
     const right = addRectangle(editor, [100, 100], [120, 110]);
-    // Union center x = (10 + 120) / 2 = 65: centers 20 <-> 110.
     assert.equal(editor.reflectLayers([left, right], 'horizontal'), 2);
     assert.equal(editor.repository.getById(left).position.x, 110);
     assert.equal(editor.repository.getById(right).position.x, 20);
-    // Vertical positions are untouched.
     assert.equal(editor.repository.getById(left).position.y, 15);
     assert.equal(editor.repository.getById(right).position.y, 105);
 });

@@ -37,8 +37,6 @@ function applyHistorySnapshot(editor, selectedIds) {
     editor.selectLayers(selectedIds);
 }
 
-// Undo/redo rebuild every layer with fresh ids, so an active point-editing
-// session must follow its layer to the same document index.
 function editingIndexOf(editor) {
     const editingId = editor.state.pointEditingId;
     if (editingId == null) return -1;
@@ -64,12 +62,10 @@ function clearDocument(editor) {
 function openDocument(editor, svgText, filename) {
     const backend = editor.backend;
     clearDocument(editor);
-    // importLayers prefers the embedded layered project when present and
-    // falls back to flat path import for plain/foreign SVGs.
     const layers = importLayers(backend.scene, svgText);
     backend.compositor.rebuild();
-    const output = filename ?? getBootOptions().outputPath ?? null;
-    setBootOptions({ ...getBootOptions(), outputPath: output });
+    const output = filename ?? getBootOptions().filename ?? null;
+    setBootOptions({ ...getBootOptions(), filename: output });
     return layers.map((layer) => layer.id);
 }
 
@@ -97,8 +93,6 @@ export const commandHandlers = {
         editor.backend.resize(width, height, editor.viewState);
     },
     'delete-selected': (editor) => {
-        // While point editing, Delete only ever removes points — never the
-        // whole layer. Without a point selection it is a no-op.
         if (editor.state.pointEditingId != null) {
             if (editor.state.selectedPointIndices.length) {
                 editor.deleteSelectedPoints();
@@ -126,7 +120,6 @@ export const commandHandlers = {
         editor.reflectSelected('vertical');
     },
     'select-all': (editor) => {
-        // While point editing, Ctrl+A selects every point of the shape.
         if (editor.selectAllPoints()) return;
         const layers = editor.backend.snapshots(null);
         editor.selectLayers(layers.map((layer) => layer.id));

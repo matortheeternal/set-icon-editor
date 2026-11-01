@@ -91,10 +91,6 @@ export function gridVisualColors(color = GRID_LINE) {
     };
 }
 
-// Single stretched SVG grid so major/minor lines share exact coordinates:
-// minor tiles can no longer blur into doubled lines at half pixels, and a
-// major line paints directly over its coincident minor line instead of
-// stacking a second translucent line next to it.
 export function gridBackgroundImage(
     major = GRID_MAJOR_DIVISIONS,
     minor = GRID_MINOR_DIVISIONS,

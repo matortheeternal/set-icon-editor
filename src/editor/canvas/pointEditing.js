@@ -64,9 +64,6 @@ export function applyPointDrag(repository, session, layers, event) {
         : [session.segmentIndex];
     const indices = normalizePointIndices(wanted, segments.length);
     if (!indices.length) return;
-    // Move every selected anchor by the same local delta so the group keeps
-    // its shape. Falls back to absolute placement for single-point sessions
-    // whose event carries no delta (e.g. synthetic events in tests).
     const delta = localDeltaFor(shape, event);
     if (delta) {
         for (const index of indices) {

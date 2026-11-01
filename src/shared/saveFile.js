@@ -16,9 +16,6 @@ export function canShowNativeSaveDialog() {
     return typeof globalThis.Neutralino?.os?.showSaveDialog === 'function';
 }
 
-// Opens the OS save dialog when running under Neutralino. Resolves to the
-// picked path, null when the user cancels (or the dialog fails), and
-// undefined when no native dialog exists so the caller can fall back.
 export async function requestNativeSavePath(defaultPath) {
     if (!canShowNativeSaveDialog()) return undefined;
     try {

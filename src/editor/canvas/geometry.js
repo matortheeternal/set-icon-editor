@@ -23,7 +23,6 @@ export function normalizedAngleDelta(delta) {
     return delta;
 }
 
-// Holding Ctrl while rotating snaps the gesture to these increments.
 export const ROTATION_SNAP_STEP = 15;
 
 export function snapToStep(value, step) {

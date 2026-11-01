@@ -1,6 +1,3 @@
-// MTG rarity preview presets. Gradient stop values mirror card-magician
-// (modules/magic/M15/Rarity/style.css); the matching diagonal gradient
-// shape (0/45/55/100%) mirrors its defaultSymbol.svg.js.
 export const BUILT_IN_RARITIES = [
     {
         id: 'common',
@@ -83,7 +80,6 @@ function persistCustomRarities(list, backend) {
     try {
         backend.setItem(CUSTOM_RARITIES_KEY, JSON.stringify(list));
     } catch {
-        // Storage full or unavailable: keep the in-memory list anyway.
     }
     return list;
 }

@@ -7,9 +7,6 @@ import {
 } from './canvasHitTesting.js';
 import { POINT_HIT_TOLERANCE, probeInsertLocation } from './pointEditing.js';
 
-// Two taps within this window near the same spot count as a double-click.
-// Paper.js only synthesizes double-clicks for items, never for tools, so
-// taps are paired here instead of relying on tool.onDoubleClick.
 const DOUBLE_TAP_MS = 400;
 
 export class CanvasInputController {
@@ -52,9 +49,6 @@ export class CanvasInputController {
         }
         const layer = this.repository.getById(state.selectedId);
         const editing = layer && state.pointEditingId === layer.id;
-        // While point editing, anchor clicks (including shift-clicks) belong
-        // to the point selection — never to shape toggling, which would
-        // deselect the layer and drop the editing session.
         if (editing && findPointControl(this.scene, event.point)) {
             return this.beginPointEdit(event, layer);
         }
@@ -83,7 +77,6 @@ export class CanvasInputController {
             this.lastPress = null;
             const controlType = control.data.pointControlType;
             const segmentIndex = control.data.segmentIndex;
-            // Shift-click toggles one anchor in/out of the point selection.
             if (event.modifiers.shift && controlType === 'point') {
                 this.onPointSelect([segmentIndex], { extend: true });
                 return;
@@ -104,8 +97,6 @@ export class CanvasInputController {
         const tolerance = POINT_HIT_TOLERANCE
             * (this.scene.projectUnitsPerCssPixel?.() ?? 1);
         if (shape && probeInsertLocation(shape, event.point, tolerance)) {
-            // Taps near the curve keep the editing session alive. A second
-            // tap at the same spot soon after the first splits the curve.
             if (this.isSecondTap(event)) {
                 this.lastPress = null;
                 this.onInsertPoint(event.point);
