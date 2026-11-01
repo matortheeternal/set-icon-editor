@@ -67,18 +67,17 @@ function styleGeometry(svg, gradientId, outline) {
         replacePaint(element, 'fill', fill);
         replacePaint(element, 'stroke', outline);
     }
-    for (const flood of svg.querySelectorAll('feFlood')) {
+    for (const flood of svg.querySelectorAll('feFlood'))
         replacePaint(flood, 'flood-color', outline);
-    }
-    if (!svg.hasAttribute('fill') && !svg.style.fill) svg.setAttribute('fill', fill);
+    if (!svg.hasAttribute('fill') && !svg.style.fill)
+        svg.setAttribute('fill', fill);
 }
 
 function createGradient(doc, id, colors) {
     const gradient = doc.createElementNS(SVG_NS, 'linearGradient');
     const attributes = { id, x1: '0%', y1: '0%', x2: '100%', y2: '100%' };
-    for (const [name, value] of Object.entries(attributes)) {
+    for (const [name, value] of Object.entries(attributes))
         gradient.setAttribute(name, value);
-    }
     for (const [index, offset] of OFFSETS.entries()) {
         const stop = doc.createElementNS(SVG_NS, 'stop');
         stop.setAttribute('offset', offset);
@@ -95,14 +94,18 @@ function addRarityGradient(svg, id, colors) {
     svg.prepend(defs);
 }
 
-export function raritySvg(svgText, preset = {}) {
-    const svg = parseSvg(svgText);
-    if (!svg) return null;
+function applyPalette(svg, preset) {
     const prefix = `set-rarity-${++nextId}`;
     prepareSvg(svg, prefix);
     const palette = rarityPalette(preset);
     const gradientId = `${prefix}-paint`;
     styleGeometry(svg, gradientId, palette.outline);
     addRarityGradient(svg, gradientId, palette.colors);
-    return svg;
+}
+
+export function renderSetSymbol(source, preset = {}) {
+    const svg = parseSvg(source);
+    if (!svg) return '';
+    applyPalette(svg, preset ?? {});
+    return new XMLSerializer().serializeToString(svg);
 }

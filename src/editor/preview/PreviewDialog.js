@@ -6,7 +6,7 @@ import {
     findRarity,
     saveCustomRarity,
 } from './rarityPresets.js';
-import { previewMarkup } from './rarityPreview.js';
+import { renderSetSymbol } from './renderSetSymbol.js';
 
 const L = localize('editor');
 
@@ -133,7 +133,7 @@ export class PreviewDialog extends EditorElement {
 
     renderPreview() {
         const preset = findRarity(this.activeId);
-        this.preview.innerHTML = previewMarkup(this.sourceSvg, preset);
+        this.preview.innerHTML = renderSetSymbol(this.sourceSvg, preset);
     }
 
     onPresetChange() {

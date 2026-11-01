@@ -3,9 +3,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-    applyRarity,
-    previewMarkup,
-} from '../src/editor/preview/rarityPreview.js';
+    renderSetSymbol,
+} from '../src/editor/preview/renderSetSymbol.js';
 import {
     BUILT_IN_RARITIES,
     deleteCustomRarity,
@@ -54,9 +53,9 @@ test('built-in rarities match the card-magician M15 values', () => {
     assert.equal(byId.rare.outline, '#000000');
 });
 
-test('applyRarity swaps fills for the gradient and strokes for the outline', () => {
+test('renderSetSymbol swaps fills for the gradient and strokes for the outline', () => {
     const rare = findRarity('rare');
-    const out = applyRarity(SAMPLE, rare);
+    const out = renderSetSymbol(SAMPLE, rare);
     assert.match(out, /fill="url\(#set-rarity-\d+-paint\)"/);
     assert.match(out, /stroke="#000000"/);
     assert.ok(!out.includes('fill="#000000"'));
@@ -76,16 +75,16 @@ test('applyRarity swaps fills for the gradient and strokes for the outline', () 
     }
 });
 
-test('applyRarity tolerates empty input and previewMarkup strips the prolog', () => {
-    assert.equal(applyRarity('', findRarity('common')), '');
-    assert.equal(applyRarity(null, findRarity('common')), '');
-    const markup = previewMarkup(SAMPLE, findRarity('common'));
+test('renderSetSymbol handles empty input and omits the XML prolog', () => {
+    assert.equal(renderSetSymbol('', findRarity('common')), '');
+    assert.equal(renderSetSymbol(null, findRarity('common')), '');
+    const markup = renderSetSymbol(SAMPLE, findRarity('common'));
     assert.ok(!markup.startsWith('<?xml'));
     assert.match(markup, /^<svg/);
 });
 
-test('applyRarity rejects arbitrary preset values in SVG attributes', () => {
-    const output = applyRarity(SAMPLE, {
+test('renderSetSymbol rejects arbitrary preset values in SVG attributes', () => {
+    const output = renderSetSymbol(SAMPLE, {
         g1: '#123456" onload="alert(1)',
         outline: 'red" onload="alert(1)',
     });
