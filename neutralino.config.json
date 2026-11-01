@@ -4,7 +4,7 @@
   "applicationName": "Set Icon Editor",
   "applicationIcon": "resources/icons/appIcon.png",
   "version": "1.0.0",
-  "defaultMode": "chrome",
+  "defaultMode": "window",
   "port": 0,
   "documentRoot": "/resources/",
   "url": "/",
