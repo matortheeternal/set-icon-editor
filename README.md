@@ -4,12 +4,18 @@ A simple desktop app for creating and editing SVG set icons for Magic: The Gathe
 
 ## Usage
 
-1. Open Set Icon Editor. Start with the blank canvas or use **File → Open…** to load an existing SVG.
+1. Open Set Icon Editor. Start with the blank canvas or use **File → Open…** to open an existing SVG.
 2. Choose a shape from the toolbox and drag on the canvas to draw it.
 3. Select shapes to move, resize, or rotate them. Use the layers panel to reorder shapes and control how they combine.
 4. Choose **Edit points** to adjust a shape's outline. Double-click a curve to add a point.
 5. Open **View → Preview…** to see your icon with different rarity colors.
 6. Use **File → Save** or **Save As…** to save your icon as an SVG.
+
+Pass an SVG filename to open it directly:
+
+```sh
+set-icon-editor "/path/to/set symbol.svg"
+```
 
 ## Shortcuts
 

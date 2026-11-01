@@ -20,22 +20,22 @@ setBootOptions(options);
 applyTheme(resolveTheme(getBootOptions().theme));
 if (isNeutralino()) globalThis.Neutralino.init();
 
-async function bootImport() {
-    const { importPath, outputPath } = getBootOptions();
-    if (!importPath) return;
+async function bootOpen() {
+    const { filename } = getBootOptions();
+    if (!filename) return;
     try {
         const svgText = isNeutralino()
-            ? await globalThis.Neutralino.filesystem.readFile(importPath)
-            : await (await fetch(importPath)).text();
+            ? await globalThis.Neutralino.filesystem.readFile(filename)
+            : await (await fetch(filename)).text();
         const editor = document.querySelector('sei-app');
         editor?.controller?.command({
             command: 'open-document',
             svgText,
-            filename: outputPath ?? importPath,
+            filename,
         });
     } catch (error) {
-        console.error('Import failed:', error);
+        console.error('Open failed:', error);
     }
 }
 
-void bootImport();
+void bootOpen();

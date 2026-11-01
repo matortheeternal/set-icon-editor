@@ -16,10 +16,10 @@ test('detects a plain browser context', () => {
 
 test('reads Neutralino globals when present', () => {
     globalThis.Neutralino = {};
-    globalThis.NL_ARGS = ['--import', 'a.svg'];
+    globalThis.NL_ARGS = ['setIconEditor', 'a.svg'];
     try {
         assert.equal(isNeutralino(), true);
-        assert.deepEqual(rawLaunchArgs(), ['--import', 'a.svg']);
+        assert.deepEqual(rawLaunchArgs(), ['a.svg']);
     } finally {
         delete globalThis.Neutralino;
         delete globalThis.NL_ARGS;
@@ -27,33 +27,12 @@ test('reads Neutralino globals when present', () => {
     assert.equal(isNeutralino(), false);
 });
 
-test('parses spaced and inline launch flags', () => {
-    assert.deepEqual(parseLaunchOptions([]), {
-        importPath: null,
-        outputPath: null,
-        theme: 'auto',
-    });
-    assert.deepEqual(
-        parseLaunchOptions(['--import', 'a.svg', '--output', 'b.svg']),
-        { importPath: 'a.svg', outputPath: 'b.svg', theme: 'auto' },
-    );
-    assert.deepEqual(
-        parseLaunchOptions(['--import=a.svg', '--output=b.svg']),
-        { importPath: 'a.svg', outputPath: 'b.svg', theme: 'auto' },
-    );
-});
-
-test('ignores valueless and unknown flags', () => {
-    assert.deepEqual(parseLaunchOptions(['--import']), {
-        importPath: null,
-        outputPath: null,
-        theme: 'auto',
-    });
-    assert.deepEqual(parseLaunchOptions(['--other', 'x']), {
-        importPath: null,
-        outputPath: null,
-        theme: 'auto',
-    });
+test('starts without a filename and ignores unknown options', () => {
+    const empty = { filename: null, theme: 'auto' };
+    assert.deepEqual(parseLaunchOptions([]), empty);
+    assert.deepEqual(parseLaunchOptions(['--other', 'x']), empty);
+    assert.deepEqual(parseLaunchOptions(['--import', 'a.svg', '--output', 'b.svg']), empty);
+    assert.deepEqual(parseLaunchOptions(['--import=a.svg', '--output=b.svg']), empty);
 });
 
 test('parses the theme flag and normalizes unknown values to auto', () => {
@@ -64,8 +43,31 @@ test('parses the theme flag and normalizes unknown values to auto', () => {
 });
 
 test('boot options round-trip', () => {
-    const options = { importPath: 'a.svg', outputPath: null };
+    const options = { filename: 'a.svg', theme: 'auto' };
     setBootOptions(options);
     assert.equal(getBootOptions(), options);
     setBootOptions(parseLaunchOptions([]));
+});
+
+test('uses the first positional filename for opening and saving', () => {
+    for (const filename of ['a.svg', '/tmp/set icon.svg', 'C:\\Icons\\set.svg', 'a=b.svg']) {
+        assert.deepEqual(parseLaunchOptions([filename]), { filename, theme: 'auto' });
+        assert.deepEqual(parseLaunchOptions(['--theme=dark', filename]), {
+            filename, theme: 'dark',
+        });
+        assert.equal(parseLaunchOptions([filename, '--theme', 'light']).theme, 'light');
+    }
+    assert.equal(parseLaunchOptions(['first.svg', 'second.svg']).filename, 'first.svg');
+    assert.equal(parseLaunchOptions(['--', '-icon.svg']).filename, '-icon.svg');
+});
+
+test('excludes the Neutralino executable from positional filenames', () => {
+    globalThis.NL_ARGS = ['/opt/seticoneditor/setIconEditor', '/tmp/icon.svg'];
+    try {
+        assert.equal(parseLaunchOptions().filename, '/tmp/icon.svg');
+        globalThis.NL_ARGS = ['/opt/seticoneditor/setIconEditor'];
+        assert.equal(parseLaunchOptions().filename, null);
+    } finally {
+        delete globalThis.NL_ARGS;
+    }
 });

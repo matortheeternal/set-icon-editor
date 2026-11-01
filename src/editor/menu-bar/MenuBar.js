@@ -213,7 +213,7 @@ export class MenuBar extends EditorElement {
     }
 
     saveOrPrompt() {
-        if (getBootOptions().outputPath) {
+        if (getBootOptions().filename) {
             this.emit({ command: 'save-document' });
         } else {
             this.openSaveDialog();
@@ -221,10 +221,10 @@ export class MenuBar extends EditorElement {
     }
 
     async openSaveDialog() {
-        const fallback = getBootOptions().outputPath ?? 'untitled-icon.svg';
+        const fallback = getBootOptions().filename ?? 'untitled-icon.svg';
         const picked = await requestNativeSavePath(fallback);
         if (picked) {
-            setBootOptions({ ...getBootOptions(), outputPath: picked });
+            setBootOptions({ ...getBootOptions(), filename: picked });
             setWindowTitle(picked);
             this.emit({ command: 'save-document' });
             return;
@@ -238,7 +238,7 @@ export class MenuBar extends EditorElement {
     confirmSaveDialog() {
         const path = this.savePath.value.trim();
         const output = path || 'untitled-icon.svg';
-        setBootOptions({ ...getBootOptions(), outputPath: output });
+        setBootOptions({ ...getBootOptions(), filename: output });
         setWindowTitle(output);
         this.saveDialog.hide();
         this.emit({ command: 'save-document' });
