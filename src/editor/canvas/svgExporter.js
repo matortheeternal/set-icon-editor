@@ -1,3 +1,4 @@
+import { cleanSvg } from './cleanSvg.js';
 import { downloadTextFile } from '../../shared/saveFile.js';
 import {
     describeProjectLayers,
@@ -29,7 +30,8 @@ export function serializeScene(scene, repository = null) {
     const metadata = layers.length ? metadataElement(layers) : null;
     const frame = normalizeExportFrame(documentWidth, documentHeight);
     const viewBox = `0 0 ${documentWidth} ${documentHeight}`;
-    return wrapSvg(geometry, frame.width, frame.height, metadata, viewBox);
+    const svg = wrapSvg(geometry, frame.width, frame.height, metadata, viewBox);
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + cleanSvg(svg);
 }
 
 export function downloadSvg(svg, filename = 'untitled-icon.svg') {
