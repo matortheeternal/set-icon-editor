@@ -1,7 +1,7 @@
 {
     "name": "set-icon-editor",
     "version": "1.0.0",
-    "description": "",
+    "description": "A simple tool for editing and authoring SVGs for MTG set icons.",
     "license": "MIT",
     "author": "mator",
     "type": "module",
