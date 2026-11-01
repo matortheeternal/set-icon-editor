@@ -13,11 +13,7 @@
         "build": "node tasks/build.js",
         "serve": "npm run build && node server.js",
         "app": "npm run build && neu run",
-        "builder:sync": "node tasks/sync-builder-config.js",
         "release": "node tasks/release.js",
-        "release:linux": "node tasks/release.js --targets=appimage,deb",
-        "release:windows": "node tasks/release.js --targets=nsis",
-        "release:mac": "node tasks/release.js --targets=dmg",
         "release:quick": "node tasks/release.js --skip-build"
     },
     "devDependencies": {

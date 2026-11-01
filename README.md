@@ -33,6 +33,12 @@ Use **Command** instead of **Ctrl** on macOS.
 | Move selection | Arrow keys (Shift for larger steps) |
 | Leave drawing or point editing | Esc |
 
+## Building
+
+Run `npm run release` to generate standalone executables with embedded resources
+in `dist/setIconEditor/`. See [release instructions](docs/release.md) for setup
+and supported platforms.
+
 ## License
 
 [MIT](LICENSE)

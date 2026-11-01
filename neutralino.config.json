@@ -54,58 +54,6 @@
     "extensionsPath": "/extensions/",
     "clientLibrary": "/resources/js/neutralino.js",
     "binaryVersion": "6.9.0",
-    "clientVersion": "6.9.0",
-    "builder": {
-      "windows": {
-        "targets": [
-          {
-            "target": "nsis",
-            "arch": ["x64"],
-            "icon": "./installerassets/windows/nsis/app.ico",
-            "sidebarImage": "./installerassets/windows/nsis/sidebar.bmp",
-            "headerImage": "./installerassets/windows/nsis/header.bmp",
-            "license": "./installerassets/LICENSE.txt",
-            "output": "./dist/windows"
-          }
-        ]
-      },
-      "linux": {
-        "targets": [
-          {
-            "target": "deb",
-            "arch": ["x64", "arm64", "armhf"],
-            "icon": "./installerassets/linux/deb/app.png",
-            "category": "Graphics",
-            "output": "./dist/linux",
-            "maintainer": "mator",
-            "description": "SVG set-icon editor companion for Card Magician"
-          },
-          {
-            "target": "appimage",
-            "arch": ["x64", "arm64"],
-            "icon": "./installerassets/linux/appimage/app.png",
-            "license": "./installerassets/LICENSE.txt",
-            "output": "./dist/linux",
-            "maintainer": "mator",
-            "description": "SVG set-icon editor companion for Card Magician"
-          }
-        ]
-      },
-      "mac": {
-        "targets": [
-          {
-            "target": "dmg",
-            "arch": ["x64", "arm64", "universal"],
-            "icon": "./installerassets/mac/dmg/app.icns",
-            "background": "./installerassets/mac/dmg/dmg-background.png",
-            "iconSize": 80,
-            "window": { "width": 660, "height": 400 },
-            "appPosition": { "x": 180, "y": 170 },
-            "applicationsSymlinkPosition": { "x": 480, "y": 170 },
-            "output": "./dist/mac"
-          }
-        ]
-      }
-    }
+    "clientVersion": "6.9.0"
   }
 }
